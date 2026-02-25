@@ -1,0 +1,19 @@
+{
+  "name": "programming-lab-iii-projecct",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-joaovitor/programming-lab-iii.git"
+  },
+  "author": "dev-joaovitor",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dev-joaovitor/programming-lab-iii/issues"
+  },
+  "homepage": "https://github.com/dev-joaovitor/programming-lab-iii#readme",
+  "description": ""
+}
