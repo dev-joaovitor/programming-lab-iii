@@ -1,5 +1,5 @@
 import express from "express";
-import users from "./src/routes/users.js";
+import userRoutes from "./src/routes/user.routes.js";
 
 const app = express();
 const router = app.router;
@@ -12,7 +12,7 @@ router.get("/health", function (req, res) {
   res.send("API WORKING");
 });
 
-router.use("/users", users);
+router.use("/users", userRoutes);
 
 // prefix
 app.use("/api/v1", router);
@@ -25,3 +25,4 @@ app.use(function (req, res) {
 app.listen(DEFAULT_PORT, function () {
   console.log(`Server running on ${DEFAULT_PORT}`);
 });
+
