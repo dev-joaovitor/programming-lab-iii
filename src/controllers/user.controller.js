@@ -242,12 +242,21 @@ function remove(req, res) {
   });
 }
 
+function totalUsers(req, res) {
+  return res.json({
+    success: true,
+    data: { total: userService.total() },
+    message: "Total users successfully fetched",
+  });
+}
+
 const userController = {
   list,
   findById,
   create,
   update,
-  remove
+  remove,
+  totalUsers,
 }
 
 export default userController;

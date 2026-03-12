@@ -43,12 +43,17 @@ function deleteOneById(userId) {
   return userDeleted.length > 0;
 }
 
+function total() {
+  return users.length;
+}
+
 const userService = {
   findAll,
   findOneById,
   createOne,
   updateOneById,
-  deleteOneById
+  deleteOneById,
+  total,
 }
 
 export default userService;
