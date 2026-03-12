@@ -6,9 +6,12 @@ function findAll() {
   return JSON.parse(JSON.stringify(users));
 }
 
-// immutable
 function findOneById(userId) {
   return findAll().find((user) => user.id === userId);
+}
+
+function findByCityId(cityId) {
+  return findAll().filter((user) => user.city_id === cityId);
 }
 
 function createOne(user) {
@@ -50,6 +53,7 @@ function total() {
 const userService = {
   findAll,
   findOneById,
+  findByCityId,
   createOne,
   updateOneById,
   deleteOneById,

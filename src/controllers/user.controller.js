@@ -7,9 +7,15 @@ const TRUTHY_QUERY_VALUE = ["yes", "1", "y"];
 const FALSY_QUERY_VALUE = ["no", "0", "n"];
 const ALLOWED_ORDER_BY = ["age"];
 const ALLOWED_ORDER_DIRECTIONS = ["desc", "asc"];
+const ALLOWED_GROUP_BY = ["city"];
 
 function list(req, res) {
-  const { isAdult, city, orderBy, orderDirection } = req.query
+  const {
+    isAdult,
+    city,
+    orderBy,
+    orderDirection,
+  } = req.query
   const foundUsers = userService.findAll();
   let filteredUsers = [];
 
@@ -34,15 +40,11 @@ function list(req, res) {
   }
 
   if (orderBy && ALLOWED_ORDER_BY.includes(orderBy)) {
-    let orderDirectionSanitized;
-    if (orderDirection) {
-      if (ALLOWED_ORDER_DIRECTIONS.includes(orderDirection.toLowerCase())) {
-        orderDirectionSanitized = orderDirection.toLowerCase();
-      } else {
-        orderDirectionSanitized = "desc";
-      }
-    } else {
-      orderDirectionSanitized = "desc";
+    let orderDirectionSanitized = "desc";
+
+    if (orderDirection
+        && ALLOWED_ORDER_DIRECTIONS.includes(orderDirection.toLowerCase())) {
+      orderDirectionSanitized = orderDirection.toLowerCase();
     }
 
     filteredUsers = orderHelper.orderBy(
@@ -279,6 +281,35 @@ function totalUsers(req, res) {
   });
 }
 
+function groupBy(req, res) {
+  const { field } = req.params;
+
+  if (!ALLOWED_GROUP_BY.includes(field)) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: `Provided field not allowed to group by. Try: ${ALLOWED_GROUP_BY.join(", ")}`,
+    });
+  }
+
+  let group = [];
+
+  if (field === "city") {
+    const cities = cityService.findAll();
+
+    for (const city of cities) {
+      city.users = userService.findByCityId(city.id);
+      group.push(city);
+    }
+  }
+
+  return res.json({
+    success: true,
+    data: group,
+    message: "User successfully grouped",
+  });
+}
+
 const userController = {
   list,
   findById,
@@ -286,6 +317,7 @@ const userController = {
   update,
   remove,
   totalUsers,
+  groupBy,
 }
 
 export default userController;

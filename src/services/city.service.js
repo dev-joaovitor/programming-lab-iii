@@ -3,7 +3,7 @@ const cities = [];
 
 // immutable
 function findAll() {
-  return [...cities];
+  return JSON.parse(JSON.stringify(cities));
 }
 
 // immutable
