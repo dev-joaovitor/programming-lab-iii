@@ -3,7 +3,7 @@ const users = [];
 
 // immutable
 function findAll() {
-  return [...users];
+  return JSON.parse(JSON.stringify(users));
 }
 
 // immutable

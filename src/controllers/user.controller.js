@@ -1,17 +1,31 @@
 import cityService from "../services/city.service.js";
 import userService from "../services/user.service.js";
 
-function list(req, res) {
-  const users = userService.findAll();
+const ADULT_MINIMUM_AGE = 18;
+const TRUTHY_QUERY_VALUE = ["yes", "1", "y"];
+const FALSY_QUERY_VALUE = ["no", "0", "n"];
 
-  for (const user of users) {
+function list(req, res) {
+  const { isAdult } = req.query
+  const foundUsers = userService.findAll();
+  const filteredUsers = [];
+
+  for (const user of foundUsers) {
     user.city = cityService.findOneById(user.city_id);
     delete user.city_id;
+
+    if (TRUTHY_QUERY_VALUE.includes(isAdult)) {
+      if (user.age < ADULT_MINIMUM_AGE) continue;
+    } else if (FALSY_QUERY_VALUE.includes(isAdult)) {
+      if (user.age >= ADULT_MINIMUM_AGE) continue;
+    }
+
+    filteredUsers.push(user);
   }
 
   return res.json({
     success: true,
-    data: users,
+    data: filteredUsers,
     message: "Users successfully fetched",
   });
 }
