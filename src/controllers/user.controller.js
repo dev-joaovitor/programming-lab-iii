@@ -1,7 +1,13 @@
+import cityService from "../services/city.service.js";
 import userService from "../services/user.service.js";
 
 function list(req, res) {
   const users = userService.findAll();
+
+  for (const user of users) {
+    user.city = cityService.findOneById(user.city_id);
+    delete user.city_id;
+  }
 
   return res.json({
     success: true,
@@ -10,8 +16,32 @@ function list(req, res) {
   });
 }
 
+function findById(req, res) {
+  const userId = req.params.id
+  const userFound = userService.findOneById(parseInt(userId));
+
+  if (!userFound) {
+    return res.status(404).json({
+      success: false,
+      data: null,
+      message: "User not found",
+    });
+  }
+
+  userFound.city = cityService.findOneById(userFound.city_id);
+  delete userFound.city_id;
+
+  return res.json({
+    success: true,
+    data: userFound,
+    message: "User successfully fetched",
+  });
+}
+
 function create(req, res) {
-  const name = req.body.name;
+  const name = req.body.name?.trim();
+  const city = req.body.city?.trim();
+  let age = req.body.age;
 
   if (!name) {
     return res.status(422).json({
@@ -21,7 +51,50 @@ function create(req, res) {
     });
   }
 
-  const userCreated = userService.createOne({ name });
+  if (!age) {
+    return res.status(422).json({
+      success: false,
+      data: null,
+      message: "Missing required field: age",
+    });
+  }
+
+  age = parseInt(age);
+
+  if (isNaN(age)) {
+    return res.status(422).json({
+      success: false,
+      data: null,
+      message: "Invalid value: age must be a number",
+    });
+  }
+
+  if (age < 1) {
+    return res.status(422).json({
+      success: false,
+      data: null,
+      message: "Invalid value: age must be positive and non-zero",
+    });
+  }
+
+  if (!city) {
+    return res.status(422).json({
+      success: false,
+      data: null,
+      message: "Missing required field: city",
+    });
+  }
+
+  let foundCity = cityService.findOneByName(city);
+
+  if (!foundCity) {
+    foundCity = cityService.createOne({ name: city });
+  }
+
+  const userCreated = userService.createOne({ name, age, city_id: foundCity.id });
+
+  delete userCreated.city_id;
+  userCreated.city = foundCity;
 
   return res.status(201).json({
     success: true,
@@ -42,7 +115,6 @@ function update(req, res) {
   }
 
   userId = parseInt(userId);
-
   const userFound = userService.findOneById(userId);
 
   if (!userFound) {
@@ -53,7 +125,9 @@ function update(req, res) {
     });
   }
 
-  const name = req.body.name;
+  const name = req.body.name?.trim();
+  const city = req.body.city?.trim();
+  let age = req.body.age;
 
   if (!name) {
     return res.status(422).json({
@@ -63,7 +137,49 @@ function update(req, res) {
     });
   }
 
-  const userUpdated = userService.updateOneById(userId, { name });
+  if (!age) {
+    return res.status(422).json({
+      success: false,
+      data: null,
+      message: "Missing required field: age",
+    });
+  }
+
+  age = parseInt(age);
+
+  if (isNaN(age)) {
+    return res.status(422).json({
+      success: false,
+      data: null,
+      message: "Invalid value: age must be a number",
+    });
+  }
+
+  if (age < 1) {
+    return res.status(422).json({
+      success: false,
+      data: null,
+      message: "Invalid value: age must be positive and non-zero",
+    });
+  }
+
+  if (!city) {
+    return res.status(422).json({
+      success: false,
+      data: null,
+      message: "Missing required field: city",
+    });
+  }
+
+  let foundCity = cityService.findOneByName(city);
+
+  if (!foundCity) {
+    foundCity = cityService.createOne({ name: city });
+  }
+
+  const userUpdated = userService.updateOneById(userId, { name, age, city_id: foundCity.id });
+  userUpdated.city = foundCity;
+  delete userUpdated.city_id;
 
   return res.json({
     success: true,
@@ -114,6 +230,7 @@ function remove(req, res) {
 
 const userController = {
   list,
+  findById,
   create,
   update,
   remove

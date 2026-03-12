@@ -15,20 +15,24 @@ function createOne(user) {
   const newUser = {
     id: AUTO_INCREMENT,
     name: user.name,
+    age: user.age,
+    city_id: user.city_id,
   }
   users.push(newUser);
 
   AUTO_INCREMENT += 1;
 
-  return newUser;
+  return {...newUser};
 }
 
 function updateOneById(userId, userData) {
   const user = users.find((user) => user.id === userId);
 
   user.name = userData.name;
+  user.age = userData.age;
+  user.city_id = userData.city_id;
 
-  return user;
+  return {...user};
 }
 
 function deleteOneById(userId) {
