@@ -1,14 +1,17 @@
+import orderHelper from "../helpers/order.helper.js";
 import cityService from "../services/city.service.js";
 import userService from "../services/user.service.js";
 
 const ADULT_MINIMUM_AGE = 18;
 const TRUTHY_QUERY_VALUE = ["yes", "1", "y"];
 const FALSY_QUERY_VALUE = ["no", "0", "n"];
+const ALLOWED_ORDER_BY = ["age"];
+const ALLOWED_ORDER_DIRECTIONS = ["desc", "asc"];
 
 function list(req, res) {
-  const { isAdult, city } = req.query
+  const { isAdult, city, orderBy, orderDirection } = req.query
   const foundUsers = userService.findAll();
-  const filteredUsers = [];
+  let filteredUsers = [];
 
   for (const user of foundUsers) {
     user.city = cityService.findOneById(user.city_id);
@@ -28,6 +31,25 @@ function list(req, res) {
     }
 
     filteredUsers.push(user);
+  }
+
+  if (orderBy && ALLOWED_ORDER_BY.includes(orderBy)) {
+    let orderDirectionSanitized;
+    if (orderDirection) {
+      if (ALLOWED_ORDER_DIRECTIONS.includes(orderDirection.toLowerCase())) {
+        orderDirectionSanitized = orderDirection.toLowerCase();
+      } else {
+        orderDirectionSanitized = "desc";
+      }
+    } else {
+      orderDirectionSanitized = "desc";
+    }
+
+    filteredUsers = orderHelper.orderBy(
+      filteredUsers,
+      orderBy,
+      orderDirectionSanitized
+    );
   }
 
   return res.json({
