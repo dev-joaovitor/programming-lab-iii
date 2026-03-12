@@ -6,12 +6,19 @@ const TRUTHY_QUERY_VALUE = ["yes", "1", "y"];
 const FALSY_QUERY_VALUE = ["no", "0", "n"];
 
 function list(req, res) {
-  const { isAdult } = req.query
+  const { isAdult, city } = req.query
   const foundUsers = userService.findAll();
   const filteredUsers = [];
 
   for (const user of foundUsers) {
     user.city = cityService.findOneById(user.city_id);
+
+    const cityFilter = city?.trim()?.toLowerCase()
+    if (cityFilter
+        && cityFilter != user.city.name.toLowerCase()) {
+      continue;
+    }
+
     delete user.city_id;
 
     if (TRUTHY_QUERY_VALUE.includes(isAdult)) {
