@@ -6,6 +6,7 @@ const userRoutes = Router();
 userRoutes.get("/", userController.list);
 userRoutes.get("/total", userController.totalUsers);
 userRoutes.get("/group-by/:field", userController.groupBy);
+userRoutes.get("/average-age", userController.averageAge);
 userRoutes.get("/:id", userController.findById);
 
 userRoutes.post("/", userController.create);

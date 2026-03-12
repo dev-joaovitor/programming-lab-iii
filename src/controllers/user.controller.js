@@ -281,6 +281,16 @@ function totalUsers(req, res) {
   });
 }
 
+function averageAge(req, res) {
+  const average = parseFloat(userService.average("age").toFixed(2));
+
+  return res.json({
+    success: true,
+    data: { average },
+    message: "Average user ages successfully calculated",
+  });
+}
+
 function groupBy(req, res) {
   const { field } = req.params;
 
@@ -318,6 +328,7 @@ const userController = {
   remove,
   totalUsers,
   groupBy,
+  averageAge,
 }
 
 export default userController;

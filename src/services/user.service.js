@@ -50,6 +50,26 @@ function total() {
   return users.length;
 }
 
+function average(field) {
+  const length = total();
+
+  if (length === 0) return 0;
+
+  return sum(field) / total();
+}
+
+function sum(field) {
+  let accumulation = 0;
+
+  for (const user of users) {
+    if (!(field in user)) break;
+
+    accumulation += user[field];
+  }
+
+  return accumulation;
+}
+
 const userService = {
   findAll,
   findOneById,
@@ -58,6 +78,7 @@ const userService = {
   updateOneById,
   deleteOneById,
   total,
+  average
 }
 
 export default userService;
